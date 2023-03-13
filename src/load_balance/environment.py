@@ -1,7 +1,7 @@
 import numpy as np
 from typing import List
 
-from utils import generate_coin_flips
+from load_balance.utils import generate_coin_flips
 from load_balance.worker import Worker
 from load_balance.job import Job, JobGenerator
 from load_balance.timeline import Timeline
