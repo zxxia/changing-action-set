@@ -11,7 +11,7 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 from load_balance.environment import Environment
 from load_balance.utils import aggregate_gradients, create_folder_if_not_exists, decrease_var, discount
-from load_balance.input_driven_rl.load_balance_actor_agent import ActorAgent
+from load_balance.input_driven_rl.actor_agent import ActorAgent
 from load_balance.input_driven_rl.critic_agent import CriticAgent
 from load_balance.input_driven_rl.average_reward import AveragePerStepReward
 from load_balance.job import JobGenerator
