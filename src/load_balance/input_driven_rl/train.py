@@ -7,6 +7,7 @@ import matplotlib
 matplotlib.use('agg')
 import numpy as np
 import tensorflow as tf
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 import matplotlib.pyplot as plt
 from load_balance.environment import Environment
 from load_balance.utils import aggregate_gradients, create_folder_if_not_exists, decrease_var, discount
