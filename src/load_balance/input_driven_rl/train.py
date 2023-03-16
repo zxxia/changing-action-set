@@ -408,4 +408,6 @@ def train(args):
         #     np.save(args.model_folder + 'test_performance.npy', all_perf)
         #     plt.close(fig)
 
-    # sess.close()
+    sess.close()
+    for tmp_agent in agents:
+        tmp_agent.terminate()
