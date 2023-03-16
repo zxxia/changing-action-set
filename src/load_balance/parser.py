@@ -27,7 +27,7 @@ def parse_args():
                        help='path to the saved model (default: None)')
     train.add_argument('--num-saved-models', type=int, default=1000,
                        help='Number of models to keep (default: 1000)')
-    train.add_argument('--model-save-interval', type=int, default=200,
+    train.add_argument('--model-save-interval', type=int, default=100,
                        help='Interval for saving Tensorflow model (default: 100)')
     train.add_argument('--num-models', type=int, default=10,
                        help='Number of models for value network (default: 10)')
