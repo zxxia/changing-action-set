@@ -61,26 +61,32 @@ def build_load_balance_tf_summaries():
     return summary_ops, summary_vars
 
 def training_agent(agent_id, params_queue, reward_queue, adv_queue,
-                   gradient_queue, eps, num_workers, job_size_norm_factor):
-    reward_scale = 1e4
+                   gradient_queue, args):
     np.random.seed(agent_id)  # for environment
     tf.compat.v1.set_random_seed(agent_id)  # for model evolving
 
     sess = tf.compat.v1.Session()
 
     # set up actor agent for training
-    actor_agent = ActorAgent(sess, num_workers, job_size_norm_factor, eps)
-    critic_agent = CriticAgent(sess, input_dim=num_workers + 2)
+    actor_agent = ActorAgent(sess, num_workers=args.num_workers,
+                             job_size_norm_factor=args.job_size_norm_factor,
+                             eps=args.eps, hid_dims=args.hid_dims)
+    critic_agent = CriticAgent(sess, input_dim=args.num_workers + 2,
+                               hid_dims=args.hid_dims)
 
     # set up envrionemnt
-    job_generator = JobGenerator()
-    env = Environment(job_generator, num_workers)
+    job_generator = JobGenerator(
+        args.num_stream_jobs, args.job_distribution, args.job_size_min,
+        args.job_size_max, args.job_size_pareto_shape,
+        args.job_size_pareto_scale, args.job_interval)
+    env = Environment(job_generator, args.num_workers, args.service_rates,
+                      args.service_rate_min, args.service_rate_max,
+                      args.queue_shuffle_prob)
 
     # collect experiences
     while True:
         # get parameters from master
-        (actor_params, critic_params, entropy_weight) = \
-            params_queue.get()
+        (actor_params, critic_params, entropy_weight) = params_queue.get()
 
         # synchronize model parameters
         actor_agent.set_params(actor_params)
@@ -102,15 +108,15 @@ def training_agent(agent_id, params_queue, reward_queue, adv_queue,
             # decompose state (for storing infomation)
             workers, job, curr_time = state
 
-            inputs = np.zeros([1, num_workers + 1])
+            inputs = np.zeros([1, args.num_workers + 1])
             for worker in workers:
                 inputs[0, worker.worker_id] = \
                     min(sum(j.size for j in worker.queue) / \
-                    job_size_norm_factor / 5.0,  # normalization
+                    args.job_size_norm_factor / 5.0,  # normalization
                     20.0)
             assert job
             inputs[0, -1] = min(job.size / \
-                job_size_norm_factor, 10.0)  # normalization
+                args.job_size_norm_factor, 10.0)  # normalization
 
             # draw an action
             action = actor_agent.predict(inputs)[0]
@@ -118,7 +124,7 @@ def training_agent(agent_id, params_queue, reward_queue, adv_queue,
             # store input and action
             batch_inputs.append(inputs)
 
-            act_vec = np.zeros([1, num_workers])
+            act_vec = np.zeros([1, args.num_workers])
             act_vec[0, action] = 1
 
             batch_act_vec.append(act_vec)
@@ -130,7 +136,7 @@ def training_agent(agent_id, params_queue, reward_queue, adv_queue,
             state, reward, done = env.step(action)
 
             # scale reward for training
-            reward /= reward_scale
+            reward /= args.reward_scale
 
             # store reward
             batch_reward.append(reward)
@@ -139,7 +145,7 @@ def training_agent(agent_id, params_queue, reward_queue, adv_queue,
         batch_wall_time.append(env.wall_time.curr_time)
 
         # compute all values
-        value_inputs = np.zeros([len(batch_inputs), num_workers + 2])
+        value_inputs = np.zeros([len(batch_inputs), args.num_workers + 2])
         for i in range(len(batch_inputs)):
             value_inputs[i, :-1] = batch_inputs[i]
             value_inputs[i, -1] = batch_wall_time[i] / float(batch_wall_time[-1])
@@ -199,8 +205,7 @@ def train(args):
     for i in range(args.num_agents):
         agents.append(mp.Process(target=training_agent, args=(
             i, params_queues[i], reward_queues[i],
-            adv_queues[i], gradient_queues[i], args.eps, args.num_workers,
-            args.job_size_norm_factor)))
+            adv_queues[i], gradient_queues[i], args)))
 
     # start training agents
     for i in range(args.num_agents):
