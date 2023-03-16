@@ -1,6 +1,4 @@
-import os
 import sys
-import itertools
 import numpy as np
 from collections import OrderedDict
 
@@ -22,11 +20,6 @@ def compute_CDF(arr, num_bins=100):
     values, base = np.histogram(arr, bins=num_bins)
     cumulative = np.cumsum(values)
     return base[:-1], cumulative / float(cumulative[-1])
-
-
-def create_folder_if_not_exists(folder_path):
-    if not os.path.exists(folder_path):
-        os.makedirs(folder_path)
 
 
 def decrease_var(var, min_var, decay_rate):

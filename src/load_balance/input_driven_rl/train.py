@@ -10,7 +10,7 @@ import tensorflow as tf
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 import matplotlib.pyplot as plt
 from load_balance.environment import Environment
-from load_balance.utils import aggregate_gradients, create_folder_if_not_exists, decrease_var, discount
+from load_balance.utils import aggregate_gradients, decrease_var, discount
 from load_balance.input_driven_rl.actor_agent import ActorAgent
 from load_balance.input_driven_rl.critic_agent import CriticAgent
 from load_balance.input_driven_rl.average_reward import AveragePerStepReward
@@ -192,8 +192,8 @@ def train(args):
     tf.compat.v1.set_random_seed(args.seed)
 
     # create result and model folder
-    create_folder_if_not_exists(args.result_folder)
-    create_folder_if_not_exists(args.model_folder)
+    os.makedirs(args.result_folder, exist_ok=True)
+    os.makedirs(args.model_folder, exist_ok=True)
 
     # initialize communication queues
     params_queues = [mp.Queue(1) for _ in range(args.num_agents)]
@@ -388,26 +388,26 @@ def train(args):
         entropy_weight = decrease_var(entropy_weight,
             args.entropy_weight_min, args.entropy_weight_decay)
 
-        # if ep % args.model_save_interval == 0:
-        #     saver.save(sess, args.model_folder + "model_ep_" + str(ep) + ".ckpt")
-        #     # perform testing
-        #     test_result = run_test(actor_agent)
-        #     # plot testing
-        #     all_iters.append(ep)
-        #     test_mean = np.mean(test_result)
-        #     test_std = np.std(test_result)
-        #     all_perf[0].append(test_mean - test_std)
-        #     all_perf[1].append(test_mean)
-        #     all_perf[2].append(test_mean + test_std)
-        #     fig = plt.figure()
-        #     plt.fill_between(all_iters, all_perf[0], all_perf[2], alpha=0.5)
-        #     plt.plot(all_iters, all_perf[1])
-        #     plt.xlabel('iteration')
-        #     plt.ylabel('Total testing reward')
-        #     plt.tick_params(labelright=True)
-        #     fig.savefig(args.model_folder + 'test_performance.png')
-        #     np.save(args.model_folder + 'test_performance.npy', all_perf)
-        #     plt.close(fig)
+        if ep % args.model_save_interval == 0:
+            saver.save(sess, args.model_folder + "model_ep_" + str(ep) + ".ckpt")
+            # # perform testing
+            # test_result = run_test(actor_agent)
+            # # plot testing
+            # all_iters.append(ep)
+            # test_mean = np.mean(test_result)
+            # test_std = np.std(test_result)
+            # all_perf[0].append(test_mean - test_std)
+            # all_perf[1].append(test_mean)
+            # all_perf[2].append(test_mean + test_std)
+            # fig = plt.figure()
+            # plt.fill_between(all_iters, all_perf[0], all_perf[2], alpha=0.5)
+            # plt.plot(all_iters, all_perf[1])
+            # plt.xlabel('iteration')
+            # plt.ylabel('Total testing reward')
+            # plt.tick_params(labelright=True)
+            # fig.savefig(args.model_folder + 'test_performance.png')
+            # np.save(args.model_folder + 'test_performance.npy', all_perf)
+            # plt.close(fig)
 
     sess.close()
     for tmp_agent in agents:
