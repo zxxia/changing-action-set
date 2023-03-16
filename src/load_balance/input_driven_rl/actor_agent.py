@@ -1,6 +1,9 @@
+from typing import List
 import numpy as np
 import tensorflow as tf
 from load_balance.input_driven_rl.nn_ops import glorot, leaky_relu, zeros
+from load_balance.job import Job
+from load_balance.worker import Worker
 
 
 class ActorAgent(object):
@@ -179,8 +182,7 @@ class ActorAgent(object):
 
         return gradients, loss
 
-    def get_action(self, state):
-        workers, job, _ = state
+    def get_action(self, workers: List[Worker], job: Job):
 
         inputs = np.zeros([1, self.input_dim])
 

@@ -1,11 +1,13 @@
+from typing import List
 import numpy as np
+from load_balance.job import Job
+from load_balance.worker import Worker
 
 class LeastWorkAgent(object):
     def __init__(self):
         pass
 
-    def get_action(self, state):
-        workers, _, _ = state
+    def get_action(self, workers: List[Worker], job: Job):
 
         min_work_idx = None
         min_work = np.inf
@@ -23,8 +25,7 @@ class ShortestProcessingTimeAgent(object):
     def __init__(self):
         pass
 
-    def get_action(self, state):
-        workers, _, _ = state
+    def get_action(self, workers: List[Worker], job: Job):
 
         min_time_idx = None
         min_time = np.inf
