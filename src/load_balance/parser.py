@@ -61,21 +61,21 @@ def parse_args():
     # load balance environment configurations
     parser.add_argument('--num-workers', type=int, default=3,
                         help='number of workers (default: 3)')
-    parser.add_argument('--num-stream-jobs', type=int, default=2000,
-                        help='number of streaming jobs (default: 2000)')
+    parser.add_argument('--num-stream-jobs', type=int, default=1000,
+                        help='number of streaming jobs (default: 1000)')
     parser.add_argument('--service-rates', type=float, default=[0.5, 1.0, 2.0],
                         nargs='+',
                         help='workers service rates (default: [0.5, 1.0, 2.0])')
     parser.add_argument('--service-rate-min', type=float, default=1.0,
                         help='minimum service rate (default: 1.0)')
-    parser.add_argument('--service-rate-max', type=float, default=10.0,
+    parser.add_argument('--service-rate-max', type=float, default=4.0,
                         help='maximum service rate (default: 4.0)')
     parser.add_argument('--job-distribution', type=str, default='uniform',
                         help='Job size distribution (default: uniform)')
-    parser.add_argument('--job-size-min', type=float, default=10.0,
+    parser.add_argument('--job-size-min', type=float, default=100.0,
                         help='minimum job size (default: 100.0)')
-    parser.add_argument('--job-size-max', type=float, default=10000.0,
-                        help='maximum job size (default: 10000.0)')
+    parser.add_argument('--job-size-max', type=float, default=1000.0,
+                        help='maximum job size (default: 1000.0)')
     parser.add_argument('--job-size-norm-factor', type=float, default=1000.0,
                         help='normalize job size in the feature (default: 1000.0)')
     parser.add_argument('--job-size-pareto-shape', type=float, default=2.0,
