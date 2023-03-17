@@ -15,6 +15,7 @@ from load_balance.input_driven_rl.actor_agent import ActorAgent
 from load_balance.input_driven_rl.critic_agent import CriticAgent
 from load_balance.input_driven_rl.average_reward import AveragePerStepReward
 from load_balance.job import JobGenerator
+from load_balance.test import test_unseen
 
 
 def build_load_balance_tf_summaries():
@@ -228,8 +229,8 @@ def train(args):
     saver = tf.compat.v1.train.Saver(max_to_keep=args.num_saved_models)
     summary_ops, summary_vars = build_load_balance_tf_summaries()
     writer = tf.compat.v1.summary.FileWriter(
-        args.result_folder + \
-        time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
+        os.path.join(args.result_folder,
+        time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())))
 
     # load trained model
     if args.pretrained_model is not None:
@@ -389,25 +390,25 @@ def train(args):
             args.entropy_weight_min, args.entropy_weight_decay)
 
         if ep % args.model_save_interval == 0:
-            saver.save(sess, args.model_folder + "model_ep_" + str(ep) + ".ckpt")
-            # # perform testing
-            # test_result = run_test(actor_agent)
-            # # plot testing
-            # all_iters.append(ep)
-            # test_mean = np.mean(test_result)
-            # test_std = np.std(test_result)
-            # all_perf[0].append(test_mean - test_std)
-            # all_perf[1].append(test_mean)
-            # all_perf[2].append(test_mean + test_std)
-            # fig = plt.figure()
-            # plt.fill_between(all_iters, all_perf[0], all_perf[2], alpha=0.5)
-            # plt.plot(all_iters, all_perf[1])
-            # plt.xlabel('iteration')
-            # plt.ylabel('Total testing reward')
-            # plt.tick_params(labelright=True)
-            # fig.savefig(args.model_folder + 'test_performance.png')
-            # np.save(args.model_folder + 'test_performance.npy', all_perf)
-            # plt.close(fig)
+            saver.save(sess, os.path.join(args.model_folder, "model_ep_{:05d}.ckpt".format(ep)))
+            # perform testing
+            test_result = test_unseen(actor_agent, args)
+            # plot testing
+            all_iters.append(ep)
+            test_mean = np.mean(test_result)
+            test_std = np.std(test_result)
+            all_perf[0].append(test_mean - test_std)
+            all_perf[1].append(test_mean)
+            all_perf[2].append(test_mean + test_std)
+            fig = plt.figure()
+            plt.fill_between(all_iters, all_perf[0], all_perf[2], alpha=0.5)
+            plt.plot(all_iters, all_perf[1])
+            plt.xlabel('iteration')
+            plt.ylabel('Total testing reward')
+            plt.tick_params(labelright=True)
+            fig.savefig(os.path.join(args.model_folder, 'test_performance.png'))
+            np.save(os.path.join(args.model_folder, 'test_performance.npy'), all_perf)
+            plt.close(fig)
 
     sess.close()
     for tmp_agent in agents:
