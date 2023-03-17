@@ -23,8 +23,8 @@ def parse_args():
                        help='epsilon (default: 1e-6)')
     train.add_argument('--hid-dims', type=int, default=[200, 128], nargs='+',
                        help='hidden dimensions (default: [200, 128])')
-    train.add_argument('--num-agents', type=int, default=10,
-                       help='number of training agents (default: 10)')
+    train.add_argument('--num-agents', type=int, default=16,
+                       help='number of training agents (default: 16)')
     train.add_argument('--num-saved-models', type=int, default=1000,
                        help='Number of models to keep (default: 1000)')
     train.add_argument('--model-save-interval', type=int, default=100,
