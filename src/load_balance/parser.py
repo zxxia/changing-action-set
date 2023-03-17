@@ -10,12 +10,14 @@ def parse_args():
     parser.add_argument('--agent', type=str, default='rl',
                         choices=('rl', 'LeastWork', 'ShortestProcessTime'),
                         help='agent type (rl, LeastWork, ShortestProcessTime)')
+    parser.add_argument('--pretrained-model', type=str, default=None,
+                       help='path to the saved model (default: None)')
 
     # training
     subparsers = parser.add_subparsers(dest='command')
     train = subparsers.add_parser('train', help='train RL agent.')
 
-    parser.add_argument('--model-folder', type=str, default='./models/',
+    train.add_argument('--model-folder', type=str, default='./models/',
                         help='Model folder path (default: ./models)')
     train.add_argument('--eps', type=float, default=1e-6,
                        help='epsilon (default: 1e-6)')
@@ -23,8 +25,6 @@ def parse_args():
                        help='hidden dimensions (default: [200, 128])')
     train.add_argument('--num-agents', type=int, default=10,
                        help='number of training agents (default: 10)')
-    train.add_argument('--pretrained-model', type=str, default=None,
-                       help='path to the saved model (default: None)')
     train.add_argument('--num-saved-models', type=int, default=1000,
                        help='Number of models to keep (default: 1000)')
     train.add_argument('--model-save-interval', type=int, default=100,
@@ -51,6 +51,12 @@ def parse_args():
                        help='Entropy weight decay rate (default: 1e-3)')
     train.add_argument('--reset-prob', type=float, default=1e-5,
                        help='Probability for episode to reset (default: 1e-5)')
+
+    # testing
+    test = subparsers.add_parser('test', help='test a agent.')
+    test.add_argument('--agent', type=str, default='rl',
+                        choices=('rl', 'LeastWork', 'ShortestProcessTime'),
+                        help='agent type (rl, LeastWork, ShortestProcessTime)')
 
     # load balance environment configurations
     parser.add_argument('--num-workers', type=int, default=3,
