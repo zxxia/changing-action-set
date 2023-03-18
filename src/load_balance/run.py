@@ -38,7 +38,7 @@ def main():
                 saver.restore(sess, args.pretrained_model)
         else:
             raise ValueError('Unsupported agent {}'.format(args.agent))
-        test(agent, args.seed)
+        test(agent, args)
     else:
         raise ValueError('Unsupported command {}'.format(args.command))
 
