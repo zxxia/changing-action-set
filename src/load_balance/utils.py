@@ -135,3 +135,33 @@ def squash(inputs, shift=0.0, scale=1.0):
     # squash to [-1, 1]
     x = (inputs - shift) / float(scale)
     return 2.0 / (1.0 + np.exp(-x)) - 1.0
+
+
+def compute_poisson_uniform_load(workers, job_size_min, job_size_max,
+                                 job_interval):
+    # poisson job arrival
+    # uniform job size distribution
+    avg_job_size = np.mean([job_size_min, job_size_max])
+
+    avg_work_per_time = avg_job_size / float(job_interval)
+
+    total_service_rate = np.sum([w.service_rate for w in workers])
+
+    load = avg_work_per_time / total_service_rate
+
+    return load
+
+
+def compute_poisson_pareto_load(workers, job_size_pareto_shape,
+                                job_size_pareto_scale, job_interval):
+    # poisson job arrival
+    # pareto job size distribution
+    avg_job_size = job_size_pareto_shape * job_size_pareto_scale / \
+                   (job_size_pareto_shape - 1)
+    avg_work_per_time = avg_job_size / float(job_interval)
+
+    total_service_rate = np.sum([w.service_rate for w in workers])
+
+    load = avg_work_per_time / total_service_rate
+
+    return load
