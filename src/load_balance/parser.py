@@ -52,7 +52,7 @@ def parse_args():
     # testing
     test = subparsers.add_parser('test', help='test a load balance agent.')
     test.add_argument('--agent', type=str, default='rl',
-                        choices=('rl', 'LeastWork', 'ShortestProcessTime'),
+                        choices=('rl', 'LeastWork', 'ShortestProcessTime', 'UniformRandom'),
                         help='agent type')
 
     # load balance environment configurations

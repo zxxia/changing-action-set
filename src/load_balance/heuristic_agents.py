@@ -39,3 +39,11 @@ class ShortestProcessingTimeAgent(object):
                 min_time = remain_time
 
         return min_time_idx
+
+class UniformRandomAgent(object):
+    def __init__(self) -> None:
+        pass
+
+    def get_action(self, workers: List[Worker], job: Job):
+        idx = np.random.choice(len(workers), 1)[0]
+        return idx

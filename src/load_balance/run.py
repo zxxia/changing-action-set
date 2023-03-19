@@ -3,7 +3,7 @@ import tensorflow as tf
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 os.environ['CUDA_VISIBLE_DEVICES'] = ''
-from load_balance.heuristic_agents import LeastWorkAgent, ShortestProcessingTimeAgent
+from load_balance.heuristic_agents import LeastWorkAgent, ShortestProcessingTimeAgent, UniformRandomAgent
 from load_balance.parser import parse_args
 from load_balance.input_driven_rl.train import train
 from load_balance.test import test
@@ -23,8 +23,10 @@ def main():
         # test
         if args.agent == 'LeastWork':
             agent = LeastWorkAgent()
-        elif args.agent == 'ShortestProcessingTimeAgent':
+        elif args.agent == 'ShortestProcessingTime':
             agent = ShortestProcessingTimeAgent()
+        elif args.agent == 'UniformRandom':
+            agent = UniformRandomAgent()
         elif args.agent == 'rl':
             sess = tf.compat.v1.Session()
             agent = ActorAgent(sess, args.num_workers, args.job_size_norm_factor)
