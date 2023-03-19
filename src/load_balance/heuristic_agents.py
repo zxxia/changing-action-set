@@ -7,12 +7,16 @@ class LeastWorkAgent(object):
     def __init__(self):
         pass
 
-    def get_action(self, workers: List[Worker], job: Job):
-
+    def get_action(self, workers: List[Worker], job: Job, mask=None):
+        if mask is None:
+            mask = np.ones(len(workers))
+        assert not np.all(mask == 0), "action mask must allow at least one action."
         min_work_idx = None
         min_work = np.inf
 
         for i in range(len(workers)):
+            if mask[i] == 0:
+                continue
             worker = workers[i]
             work = np.sum([j.size for j in worker.queue])
             if work < min_work:
@@ -25,12 +29,16 @@ class ShortestProcessingTimeAgent(object):
     def __init__(self):
         pass
 
-    def get_action(self, workers: List[Worker], job: Job):
-
+    def get_action(self, workers: List[Worker], job: Job, mask=None):
+        if mask is None:
+            mask = np.ones(len(workers))
+        assert not np.all(mask == 0), "action mask must allow at least one action."
         min_time_idx = None
         min_time = np.inf
 
         for i in range(len(workers)):
+            if mask[i] == 0:
+                continue
             worker = workers[i]
             work = np.sum([j.size for j in worker.queue])
             remain_time = work / worker.service_rate
@@ -44,6 +52,10 @@ class UniformRandomAgent(object):
     def __init__(self) -> None:
         pass
 
-    def get_action(self, workers: List[Worker], job: Job):
-        idx = np.random.choice(len(workers), 1)[0]
+    def get_action(self, workers: List[Worker], job: Job, mask=None):
+        if mask is None:
+            mask = np.ones(len(workers))
+        assert not np.all(mask == 0), "action mask must allow at least one action."
+        prob = mask / np.sum(mask)
+        idx = np.random.choice(len(workers), 1, p=prob)[0]
         return idx

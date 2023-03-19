@@ -39,7 +39,12 @@ class ActorAgent(object):
         # sample an action (from OpenAI baselines)
         logits = tf.math.log(self.act_probs)
         noise = tf.compat.v1.random_uniform(tf.shape(logits))
-        self.act = tf.argmax(logits - tf.math.log(-tf.math.log(noise)), 1)
+        noisy_logits = logits - tf.math.log(-tf.math.log(noise))
+        min_logit = tf.math.reduce_min(noisy_logits)
+        self.mask = tf.compat.v1.placeholder(tf.float32, self.output_dim)
+
+        # self.act = tf.argmax(noisy_logits, 1)
+        self.act = tf.argmax(tf.math.multiply(noisy_logits - min_logit, self.mask) , 1)
 
         # selected action: [batch_size, num_workers]
         self.act_vec = tf.compat.v1.placeholder(tf.float32, [None, self.output_dim])
@@ -154,9 +159,12 @@ class ActorAgent(object):
             i: d for i, d in zip(self.input_params, input_params)
         })
 
-    def predict(self, inputs):
+    def predict(self, inputs, mask=None):
+        if mask is None:
+            mask = np.ones(self.output_dim)
+        assert not np.all(mask == 0), "action mask must allow at least one action."
         return self.sess.run(self.act, feed_dict={
-            self.inputs: inputs
+            self.inputs: inputs, self.mask: mask
         })
 
     def get_gradients(self, inputs, act_vec, adv, entropy_weight):
@@ -169,8 +177,8 @@ class ActorAgent(object):
                 self.entropy_weight: entropy_weight
         })
 
-    def compute_gradients(self, batch_inputs, batch_act_vec, \
-                          batch_adv, entropy_weight):
+    def compute_gradients(self, batch_inputs, batch_act_vec, batch_adv,
+                          entropy_weight):
         # stack into batch format
         inputs = np.vstack(batch_inputs)
         act_vec = np.vstack(batch_act_vec)
@@ -182,7 +190,10 @@ class ActorAgent(object):
 
         return gradients, loss
 
-    def get_action(self, workers: List[Worker], job: Job):
+    def get_action(self, workers: List[Worker], job: Job, mask=None):
+        if mask is None:
+            mask = np.ones(self.output_dim)
+        assert not np.all(mask == 0), "action mask must allow at least one action."
 
         inputs = np.zeros([1, self.input_dim])
 
@@ -193,6 +204,6 @@ class ActorAgent(object):
                 20.0)
         inputs[0, -1] = min(job.size / self.job_size_norm_factor, 10.0)  # normalization
 
-        action = self.predict(inputs)
+        action = self.predict(inputs, mask)
 
         return action[0]
