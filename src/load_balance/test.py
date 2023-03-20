@@ -29,7 +29,7 @@ def test(agent, args):
         workers, job, _ = state
         total_reward += reward
 
-    return total_reward
+    return total_reward / args.reward_scale
 
 def test_unseen(agent, args, num_exp=100):
     # set up environment
@@ -60,6 +60,6 @@ def test_unseen(agent, args, num_exp=100):
             state, reward, done = env.step(act)
             workers, job, _ = state
             total_reward += reward
-        all_total_reward.append(total_reward)
+        all_total_reward.append(total_reward / args.reward_scale)
 
     return all_total_reward

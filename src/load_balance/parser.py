@@ -34,8 +34,6 @@ def parse_args():
     train.add_argument('--lr', type=float, default=1e-3, help='learning rate')
     train.add_argument('--gamma', type=float, default=1,
                        help='discount factor')
-    train.add_argument('--reward-scale', type=float, default=1e4,
-                       help='reward scale in training')
     train.add_argument('--diff-reward', type=int, default=0,
                        help='Differential reward mode')
     train.add_argument('--average-reward-storage', type=int, default=100000,
@@ -52,7 +50,7 @@ def parse_args():
     # testing
     test = subparsers.add_parser('test', help='test a load balance agent.')
     test.add_argument('--agent', type=str, default='rl',
-                        choices=('rl', 'LeastWork', 'ShortestProcessTime', 'UniformRandom'),
+                        choices=('rl', 'LeastWork', 'ShortestProcessingTime', 'UniformRandom'),
                         help='agent type')
 
     # load balance environment configurations
@@ -84,4 +82,6 @@ def parse_args():
     #                     help='cap job size below max')
     parser.add_argument('--queue-shuffle-prob', type=float, default=0.5,
                         help='queue shuffle prob')
+    parser.add_argument('--reward-scale', type=float, default=1e4,
+                       help='reward scale in training')
     return parser.parse_args()
