@@ -392,7 +392,7 @@ def train(args):
         if ep % args.model_save_interval == 0:
             saver.save(sess, os.path.join(args.model_folder, "model_ep_{:05d}.ckpt".format(ep)))
             # perform testing
-            test_result = test_unseen(actor_agent, args)
+            test_result, _ = test_unseen(actor_agent, args)
             # plot testing
             all_iters.append(ep)
             test_mean = np.mean(test_result)

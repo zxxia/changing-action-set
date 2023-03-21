@@ -142,3 +142,6 @@ class Environment(object):
                (self.wall_time.curr_time >= self.max_time)
 
         return self.observe(), reward, done
+
+    def get_job_completion_time(self):
+        return [j.finish_time - j.start_time for j in self.finished_jobs]

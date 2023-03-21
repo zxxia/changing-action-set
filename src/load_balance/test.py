@@ -1,3 +1,4 @@
+import numpy as np
 from load_balance.environment import Environment
 from load_balance.job import JobGenerator
 
@@ -43,6 +44,7 @@ def test_unseen(agent, args, num_exp=100):
                       args.queue_shuffle_prob)
 
     all_total_reward = []
+    all_avg_jct = []
 
     # run experiment
     for i in range(num_exp):
@@ -61,5 +63,6 @@ def test_unseen(agent, args, num_exp=100):
             workers, job, _, mask = state
             total_reward += reward
         all_total_reward.append(total_reward / args.reward_scale)
+        all_avg_jct.append(np.mean(env.get_job_completion_time()))
 
-    return all_total_reward
+    return all_total_reward, all_avg_jct

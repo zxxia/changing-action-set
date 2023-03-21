@@ -47,8 +47,9 @@ def main():
                 saver.restore(sess, args.pretrained_model)
         else:
             raise ValueError('Unsupported agent {}'.format(args.agent))
-        total_reward = test_unseen(agent, args)
+        total_reward, avg_jct = test_unseen(agent, args)
         print('total_reward = ', np.mean(total_reward), compute_std_of_mean(total_reward))
+        print('avg_jct = ', np.mean(avg_jct), compute_std_of_mean(avg_jct))
     else:
         raise ValueError('Unsupported command {}'.format(args.command))
 
