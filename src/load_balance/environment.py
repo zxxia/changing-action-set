@@ -145,3 +145,11 @@ class Environment(object):
 
     def get_job_completion_time(self):
         return [j.finish_time - j.start_time for j in self.finished_jobs]
+
+    def change_action_availability(self):
+        # TODO: hard coded action change prob.
+        prob = 0.8
+        self.worker_avail = np.array(np.random.rand(self.num_workers) <= prob, dtype=int)
+        # Make sure that there is at least one available action always.
+        while not self.worker_avail.any():
+            self.worker_avail = np.array(np.random.rand(self.num_workers) <= prob, dtype=int)

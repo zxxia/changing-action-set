@@ -1,9 +1,13 @@
-# python src/load_balance/run.py --result-folder ./results/debug_train \
-#     train --num-ep 500 --model-folder ./models/debug_train \
-#     --model-save-interval 10
+# command to reproduce Hongzi's results at https://github.com/hongzimao/input_driven_rl_example/blob/master/figures/regular_value_network_testing.png
+# python3 src/load_balance/run.py --num-workers 10 \
+#     --service-rates 0.15 0.25 0.35 0.45 0.55 0.65 0.75 0.85 0.95 1.05 \
+#     --result-folder ./results/regular_value_network/ \
+#     train \
+#     --model-folder ./results/parameters/regular_value_network/
+
 
 python3 src/load_balance/run.py --num-workers 10 \
     --service-rates 0.15 0.25 0.35 0.45 0.55 0.65 0.75 0.85 0.95 1.05 \
-    --result-folder ./results/regular_value_network/ \
+    --result-folder ./results/regular_value_network_change_act_avail/ \
     train \
-    --model-folder ./results/parameters/regular_value_network/
+    --model-folder ./results/parameters/regular_value_network_change_act_avail/

@@ -85,6 +85,10 @@ def training_agent(agent_id, params_queue, reward_queue, adv_queue,
                       args.service_rate_min, args.service_rate_max,
                       args.queue_shuffle_prob)
 
+    # hard code the change freq to 10 episodes for now TODO: fix this
+    action_avail_change_freq_episode = 10
+    episode_count = 0
+
     # collect experiences
     while True:
         # get parameters from master
@@ -96,6 +100,10 @@ def training_agent(agent_id, params_queue, reward_queue, adv_queue,
 
         # reset environment
         env.reset()
+
+        # TODO: is this correct?
+        if episode_count % action_avail_change_freq_episode == 0:
+            env.change_action_availability()
 
         # set up training storage
         batch_inputs, batch_act_vec, batch_values, batch_wall_time, batch_reward = \
@@ -186,6 +194,7 @@ def training_agent(agent_id, params_queue, reward_queue, adv_queue,
         # send back gradients
         gradient_queue.put([actor_gradient, critic_gradient, loss])
 
+        episode_count += 1
     sess.close()
 
 def train(args):
