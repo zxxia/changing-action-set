@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 import numpy as np
 from load_balance.job import Job
 from load_balance.worker import Worker
@@ -7,10 +7,11 @@ class LeastWorkAgent(object):
     def __init__(self):
         pass
 
-    def get_action(self, workers: List[Worker], job: Job, mask=None):
+    def get_action(self, workers: List[Worker], job: Job,
+                   mask: Optional[np.ndarray] = None):
         if mask is None:
             mask = np.ones(len(workers))
-        assert not np.all(mask == 0), "action mask must allow at least one action."
+        assert mask is not None and not np.all(mask == 0), "action mask must allow at least one action."
         min_work_idx = None
         min_work = np.inf
 
@@ -22,6 +23,7 @@ class LeastWorkAgent(object):
             if work < min_work:
                 min_work_idx = i
                 min_work = work
+        assert min_work_idx is not None
 
         return min_work_idx
 
@@ -29,10 +31,11 @@ class ShortestProcessingTimeAgent(object):
     def __init__(self):
         pass
 
-    def get_action(self, workers: List[Worker], job: Job, mask=None):
+    def get_action(self, workers: List[Worker], job: Job,
+                   mask: Optional[np.ndarray] = None):
         if mask is None:
             mask = np.ones(len(workers))
-        assert not np.all(mask == 0), "action mask must allow at least one action."
+        assert mask is not None and not np.all(mask == 0), "action mask must allow at least one action."
         min_time_idx = None
         min_time = np.inf
 
@@ -52,10 +55,11 @@ class UniformRandomAgent(object):
     def __init__(self) -> None:
         pass
 
-    def get_action(self, workers: List[Worker], job: Job, mask=None):
+    def get_action(self, workers: List[Worker], job: Job,
+                   mask: Optional[np.ndarray] = None):
         if mask is None:
             mask = np.ones(len(workers))
-        assert not np.all(mask == 0), "action mask must allow at least one action."
+        assert mask is not None and not np.all(mask == 0), "action mask must allow at least one action."
         prob = mask / np.sum(mask)
         idx = np.random.choice(len(workers), 1, p=prob)[0]
         return idx

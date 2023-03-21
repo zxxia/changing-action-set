@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 import numpy as np
 import tensorflow as tf
 from load_balance.input_driven_rl.nn_ops import glorot, leaky_relu, zeros
@@ -159,7 +159,7 @@ class ActorAgent(object):
             i: d for i, d in zip(self.input_params, input_params)
         })
 
-    def predict(self, inputs, mask=None):
+    def predict(self, inputs, mask: Optional[np.ndarray] = None):
         if mask is None:
             mask = np.ones(self.output_dim)
         assert not np.all(mask == 0), "action mask must allow at least one action."
@@ -190,7 +190,8 @@ class ActorAgent(object):
 
         return gradients, loss
 
-    def get_action(self, workers: List[Worker], job: Job, mask=None):
+    def get_action(self, workers: List[Worker], job: Job,
+                   mask: Optional[np.ndarray] = None):
         if mask is None:
             mask = np.ones(self.output_dim)
         assert not np.all(mask == 0), "action mask must allow at least one action."
