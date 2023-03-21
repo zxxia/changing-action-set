@@ -4,7 +4,9 @@ import tensorflow as tf
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 os.environ['CUDA_VISIBLE_DEVICES'] = ''
-from load_balance.heuristic_agents import LeastWorkAgent, ShortestProcessingTimeAgent, UniformRandomAgent
+from load_balance.heuristic_agents import (
+    LeastWorkAgent, RoundRobinAgent, ShortestProcessingTimeAgent,
+    UniformRandomAgent)
 from load_balance.parser import parse_args
 from load_balance.input_driven_rl.train import train
 from load_balance.test import test, test_unseen
@@ -29,6 +31,8 @@ def main():
             agent = ShortestProcessingTimeAgent()
         elif args.agent == 'UniformRandom':
             agent = UniformRandomAgent()
+        elif args.agent == 'RoundRobin':
+            agent = RoundRobinAgent()
         elif args.agent == 'rl':
             sess = tf.compat.v1.Session()
             tf.compat.v1.set_random_seed(args.seed)

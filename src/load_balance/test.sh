@@ -1,4 +1,4 @@
-for agent in rl LeastWork ShortestProcessingTime UniformRandom; do
+for agent in rl LeastWork ShortestProcessingTime UniformRandom RoundRobin; do
     echo $agent
     python3 src/load_balance/run.py --num-workers 10 \
         --pretrained-model ./results/parameters/regular_value_network/model_ep_09900.ckpt \
