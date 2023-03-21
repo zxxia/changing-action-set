@@ -18,11 +18,8 @@ def main():
     args = parse_args()
 
     if args.command == 'train':
-        if args.agent == 'rl':
-            # train
-            train(args)
-        else:
-            raise ValueError('Cannot train on {} agent'.format(args.agent))
+        # train an RL agent
+        train(args)
     elif args.command == 'test':
         # test
         if args.agent == 'LeastWork':
