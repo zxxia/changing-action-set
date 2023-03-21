@@ -20,13 +20,13 @@ def test(agent, args):
     total_reward = 0
 
     state = env.observe()
-    workers, job, _ = state
+    workers, job, _, mask = state
     done = False
 
     while not done:
-        act = agent.get_action(workers, job)
+        act = agent.get_action(workers, job, mask)
         state, reward, done = env.step(act)
-        workers, job, _ = state
+        workers, job, _, mask = state
         total_reward += reward
 
     return total_reward / args.reward_scale
@@ -52,13 +52,13 @@ def test_unseen(agent, args, num_exp=100):
         total_reward = 0
 
         state = env.observe()
-        workers, job, _ = state
+        workers, job, _, mask = state
         done = False
 
         while not done:
-            act = agent.get_action(workers, job)
+            act = agent.get_action(workers, job, mask)
             state, reward, done = env.step(act)
-            workers, job, _ = state
+            workers, job, _, mask = state
             total_reward += reward
         all_total_reward.append(total_reward / args.reward_scale)
 

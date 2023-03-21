@@ -35,6 +35,8 @@ class Environment(object):
         # finished jobs
         self.finished_jobs = []
 
+        self.worker_avail = np.ones(self.num_workers)
+
     def generate_jobs(self):
         all_t, all_size = self.job_generator.generate_jobs()
         for t, size in zip(all_t, all_size):
@@ -64,7 +66,7 @@ class Environment(object):
         return workers
 
     def observe(self):
-        return self.workers, self.incoming_job, self.wall_time.curr_time
+        return self.workers, self.incoming_job, self.wall_time.curr_time, self.worker_avail
 
     def reset(self):
         for worker in self.workers:

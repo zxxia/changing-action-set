@@ -108,7 +108,7 @@ def training_agent(agent_id, params_queue, reward_queue, adv_queue,
         while not done:
 
             # decompose state (for storing infomation)
-            workers, job, curr_time = state
+            workers, job, curr_time, mask = state
 
             inputs = np.zeros([1, args.num_workers + 1])
             for worker in workers:
@@ -121,7 +121,7 @@ def training_agent(agent_id, params_queue, reward_queue, adv_queue,
                 args.job_size_norm_factor, 10.0)  # normalization
 
             # draw an action
-            action = actor_agent.predict(inputs)[0]
+            action = actor_agent.predict(inputs, mask)[0]
 
             # store input and action
             batch_inputs.append(inputs)
