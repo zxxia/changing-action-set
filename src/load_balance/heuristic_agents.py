@@ -63,3 +63,19 @@ class UniformRandomAgent(object):
         prob = mask / np.sum(mask)
         idx = np.random.choice(len(workers), 1, p=prob)[0]
         return idx
+
+class RoundRobinAgent(object):
+    def __init__(self) -> None:
+        self.idx = -1
+        pass
+
+    def get_action(self, workers: List[Worker], job: Job,
+                   mask: Optional[np.ndarray] = None):
+        if mask is None:
+            mask = np.ones(len(workers))
+        assert mask is not None and not np.all(mask == 0), "action mask must allow at least one action."
+        n_workers = len(workers)
+        self.idx = (self.idx + 1) % n_workers
+        while mask[self.idx] == 0:
+            self.idx = (self.idx + 1) % n_workers
+        return self.idx
