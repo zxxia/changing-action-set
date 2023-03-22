@@ -11,7 +11,7 @@ from load_balance.parser import parse_args
 from load_balance.input_driven_rl.train import train
 from load_balance.test import test, test_unseen
 from load_balance.input_driven_rl.actor_agent import ActorAgent
-from common.utils import compute_std_of_mean
+from common.utils import compute_std_of_mean, save_args
 
 
 def main():
@@ -19,6 +19,7 @@ def main():
 
     if args.command == 'train':
         # train an RL agent
+        save_args(args, args.model_folder)
         train(args)
     elif args.command == 'test':
         # test
