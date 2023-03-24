@@ -6,7 +6,8 @@
 #     --model-folder ./results/parameters/regular_value_network/
 
 git_summary () {
-    printf "branch: " > $1
+    date > $1
+    printf "branch: " >> $1
     git rev-parse --abbrev-ref HEAD >> $1
     printf "commit: " >> $1
     git rev-parse HEAD >> $1
