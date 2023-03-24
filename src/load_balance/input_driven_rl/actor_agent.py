@@ -32,19 +32,17 @@ class ActorAgent(object):
         self.weights, self.bias = self.nn_init(
             self.input_dim, self.hid_dims, self.output_dim)
 
+        self.mask = tf.compat.v1.placeholder(tf.bool, [None, self.output_dim])
+
         # actor network
         self.act_probs = self.actor_network(
-            self.inputs, self.weights, self.bias)
+            self.inputs, self.weights, self.bias, self.mask)
 
         # sample an action (from OpenAI baselines)
         logits = tf.math.log(self.act_probs)
         noise = tf.compat.v1.random_uniform(tf.shape(logits))
-        noisy_logits = logits - tf.math.log(-tf.math.log(noise))
-        min_logit = tf.math.reduce_min(noisy_logits)
-        self.mask = tf.compat.v1.placeholder(tf.float32, self.output_dim)
 
-        # self.act = tf.argmax(noisy_logits, 1)
-        self.act = tf.argmax(tf.math.multiply(noisy_logits - min_logit, self.mask) , 1)
+        self.act = tf.argmax(logits - tf.math.log(-tf.math.log(noise)), 1)
 
         # selected action: [batch_size, num_workers]
         self.act_vec = tf.compat.v1.placeholder(tf.float32, [None, self.output_dim])
@@ -114,7 +112,7 @@ class ActorAgent(object):
 
         return weights, bias
 
-    def actor_network(self, inputs, weights, bias):
+    def actor_network(self, inputs, weights, bias, mask):
 
         # non-linear feed forward
         x = inputs
@@ -129,6 +127,8 @@ class ActorAgent(object):
         x += bias[-1]
 
         # softmax
+        # TODO: Fix hard coded negative infinity.
+        x = tf.where(mask, x, -1e+8 * tf.ones_like(x))
         x = tf.nn.softmax(x, axis=-1)
 
         return x
@@ -160,6 +160,7 @@ class ActorAgent(object):
         })
 
     def predict(self, inputs, mask: Optional[np.ndarray] = None):
+        mask = mask.reshape(1, -1).astype(np.bool)
         if mask is None:
             mask = np.ones(self.output_dim)
         assert not np.all(mask == 0), "action mask must allow at least one action."
@@ -168,13 +169,16 @@ class ActorAgent(object):
         })
 
     def get_gradients(self, inputs, act_vec, adv, entropy_weight):
+        # TODO: fix the mask in gradient computation
+        mask = np.ones((inputs.shape[0], 10)).astype(bool)
         return self.sess.run(
             [self.act_gradients, [self.adv_loss, self.entropy_loss]],
             feed_dict={
                 self.inputs: inputs,
                 self.act_vec: act_vec,
                 self.adv: adv,
-                self.entropy_weight: entropy_weight
+                self.entropy_weight: entropy_weight,
+                self.mask: mask
         })
 
     def compute_gradients(self, batch_inputs, batch_act_vec, batch_adv,

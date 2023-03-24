@@ -12,9 +12,11 @@ git_summary () {
     git rev-parse HEAD >> $1
 }
 
-git_summary ./results/parameters/regular_value_network_change_act_avail/git_summary.txt
+exp_name=regular_value_network_masked
+mkdir -p ./results/parameters/${exp_name}
+git_summary ./results/parameters/${exp_name}/git_summary.txt
 python3 src/load_balance/run.py --num-workers 10 \
     --service-rates 0.15 0.25 0.35 0.45 0.55 0.65 0.75 0.85 0.95 1.05 \
-    --result-folder ./results/regular_value_network_change_act_avail/ \
+    --result-folder ./results/${exp_name}/ \
     train \
-    --model-folder ./results/parameters/regular_value_network_change_act_avail/
+    --model-folder ./results/parameters/${exp_name}/
