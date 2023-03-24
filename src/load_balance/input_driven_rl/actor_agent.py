@@ -127,8 +127,7 @@ class ActorAgent(object):
         x += bias[-1]
 
         # softmax
-        # TODO: Fix hard coded negative infinity.
-        x = tf.where(mask, x, -1e+8 * tf.ones_like(x))
+        x = tf.where(mask, x, float("-Inf") * tf.ones_like(x))
         x = tf.nn.softmax(x, axis=-1)
 
         return x
