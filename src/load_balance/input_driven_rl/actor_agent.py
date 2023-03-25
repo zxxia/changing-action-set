@@ -39,6 +39,8 @@ class ActorAgent(object):
             self.inputs, self.weights, self.bias, self.mask)
 
         # sample an action (from OpenAI baselines)
+        # https://github.com/openai/baselines/blob/ea25b9e8b234e6ee1bca43083f8f3cf974143998/baselines/acer/policies.py#L21
+        # https://github.com/openai/baselines/blob/ea25b9e8b234e6ee1bca43083f8f3cf974143998/baselines/a2c/utils.py#L6
         logits = tf.math.log(self.act_probs)
         noise = tf.compat.v1.random_uniform(tf.shape(logits))
 
