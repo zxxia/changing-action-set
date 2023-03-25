@@ -319,7 +319,7 @@ def train(args):
             all_average_job_duration.append(average_job_duration)
 
         t2 = time.time()
-        print('got reward info from workers', t2 - t1, 'seconds')
+        # print('got reward info from workers', t2 - t1, 'seconds')
 
         # compute differential reward
         all_cum_reward = []
@@ -345,7 +345,7 @@ def train(args):
             adv_queues[i].put([batch_adv, all_cum_reward[i]])
 
         t3 = time.time()
-        print('advantage ready', t3 - t2, 'seconds')
+        # print('advantage ready', t3 - t2, 'seconds')
 
         actor_gradients = []
         critic_gradients = []
@@ -364,13 +364,13 @@ def train(args):
             all_value_loss.append(loss[2])
 
         t4 = time.time()
-        print('worker send back gradients', t4 - t3, 'seconds')
+        # print('worker send back gradients', t4 - t3, 'seconds')
 
         actor_agent.apply_gradients(aggregate_gradients(actor_gradients), args.lr)
         critic_agent.apply_gradients(aggregate_gradients(critic_gradients), args.lr)
 
         t5 = time.time()
-        print('apply gradient', t5 - t4, 'seconds')
+        # print('apply gradient', t5 - t4, 'seconds')
 
         print('average reward', avg_per_step_reward * (-args.reward_scale))
 
