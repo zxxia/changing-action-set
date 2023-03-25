@@ -106,8 +106,8 @@ def training_agent(agent_id, params_queue, reward_queue, adv_queue,
             env.change_action_availability()
 
         # set up training storage
-        batch_inputs, batch_act_vec, batch_values, batch_wall_time, batch_reward = \
-            [], [], [], [], []
+        batch_inputs, batch_masks, batch_act_vec, batch_values, \
+            batch_wall_time, batch_reward = [], [], [], [], [], []
 
         # run experiment
         state = env.observe()
@@ -131,8 +131,9 @@ def training_agent(agent_id, params_queue, reward_queue, adv_queue,
             # draw an action
             action = actor_agent.predict(inputs, mask)[0]
 
-            # store input and action
+            # store input, mask, and action
             batch_inputs.append(inputs)
+            batch_masks.append(mask)
 
             act_vec = np.zeros([1, args.num_workers])
             act_vec[0, action] = 1
@@ -187,7 +188,8 @@ def training_agent(agent_id, params_queue, reward_queue, adv_queue,
 
         # conpute gradient
         actor_gradient, loss = actor_agent.compute_gradients(
-            batch_inputs, batch_act_vec, batch_adv, entropy_weight)
+            batch_inputs, batch_masks, batch_act_vec, batch_adv,
+            entropy_weight)
         critic_gradient, _ = critic_agent.compute_gradients(
             value_inputs, batch_actual_value)
 

@@ -167,9 +167,7 @@ class ActorAgent(object):
             self.inputs: inputs, self.mask: mask
         })
 
-    def get_gradients(self, inputs, act_vec, adv, entropy_weight):
-        # TODO: fix the mask in gradient computation
-        mask = np.ones((inputs.shape[0], 10)).astype(bool)
+    def get_gradients(self, inputs, masks, act_vec, adv, entropy_weight):
         return self.sess.run(
             [self.act_gradients, [self.adv_loss, self.entropy_loss]],
             feed_dict={
@@ -177,17 +175,18 @@ class ActorAgent(object):
                 self.act_vec: act_vec,
                 self.adv: adv,
                 self.entropy_weight: entropy_weight,
-                self.mask: mask
+                self.mask: masks
         })
 
-    def compute_gradients(self, batch_inputs, batch_act_vec, batch_adv,
+    def compute_gradients(self, batch_inputs, batch_masks, batch_act_vec, batch_adv,
                           entropy_weight):
         # stack into batch format
         inputs = np.vstack(batch_inputs)
+        masks = np.vstack(batch_masks)
         act_vec = np.vstack(batch_act_vec)
         # invoke learning model
         gradients, loss = self.get_gradients(
-            inputs, act_vec, batch_adv, entropy_weight)
+            inputs, masks, act_vec, batch_adv, entropy_weight)
         # append baseline loss
         loss.append(np.mean(batch_adv ** 2))
 
