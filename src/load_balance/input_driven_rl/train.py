@@ -1,3 +1,4 @@
+import csv
 import multiprocessing as mp
 import os
 import time
@@ -206,6 +207,10 @@ def train(args):
     # create result and model folder
     os.makedirs(args.result_folder, exist_ok=True)
     os.makedirs(args.model_folder, exist_ok=True)
+    f_val = open(os.path.join(args.model_folder, "validation.csv"), 'w', 1)
+    val_writer = csv.writer(f_val, delimiter="\t", lineterminator="\n")
+    val_writer.writerow(["episode", "mean_reward", "std_reward", "mean_jct",
+                         "std_jct"])
 
     # initialize communication queues
     params_queues = [mp.Queue(1) for _ in range(args.num_agents)]
@@ -403,24 +408,28 @@ def train(args):
         if ep % args.model_save_interval == 0:
             saver.save(sess, os.path.join(args.model_folder, "model_ep_{:05d}.ckpt".format(ep)))
             # perform testing
-            test_result, _ = test_unseen(actor_agent, args)
+            test_result, all_avg_jct = test_unseen(actor_agent, args)
             # plot testing
             all_iters.append(ep)
             test_mean = np.mean(test_result)
             test_std = np.std(test_result)
+            val_writer.writerow(
+                [ep] + ["{:.3f}".format(val) for val in [
+                    test_mean, test_std,
+                    np.mean(all_avg_jct), np.std(all_avg_jct)]])
             all_perf[0].append(test_mean - test_std)
             all_perf[1].append(test_mean)
             all_perf[2].append(test_mean + test_std)
             fig = plt.figure()
             plt.fill_between(all_iters, all_perf[0], all_perf[2], alpha=0.5)
             plt.plot(all_iters, all_perf[1])
-            plt.xlabel('iteration')
+            plt.xlabel('Episode')
             plt.ylabel('Total testing reward')
             plt.tick_params(labelright=True)
             fig.savefig(os.path.join(args.model_folder, 'test_performance.png'))
-            np.save(os.path.join(args.model_folder, 'test_performance.npy'), all_perf)
             plt.close(fig)
 
+    f_val.close()
     sess.close()
     for tmp_agent in agents:
         tmp_agent.terminate()
