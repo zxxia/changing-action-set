@@ -16,7 +16,7 @@ from load_balance.input_driven_rl.actor_agent import ActorAgent
 from load_balance.input_driven_rl.critic_agent import CriticAgent
 from load_balance.input_driven_rl.average_reward import AveragePerStepReward
 from load_balance.job import JobGenerator
-from load_balance.test import test_unseen
+from load_balance.test import test
 
 
 def build_load_balance_tf_summaries():
@@ -410,7 +410,7 @@ def train(args):
         if ep % args.model_save_interval == 0:
             saver.save(sess, os.path.join(args.model_folder, "model_ep_{:05d}.ckpt".format(ep)))
             # perform testing
-            test_result, all_avg_jct = test_unseen(actor_agent, args)
+            test_result, all_avg_jct = test(actor_agent, args)
             # plot testing
             all_iters.append(ep)
             test_mean = np.mean(test_result)
