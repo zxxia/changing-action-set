@@ -23,31 +23,33 @@ def main():
         train(args)
     elif args.command == 'test':
         # test
-        if args.agent == 'LeastWork':
-            agent = LeastWorkAgent()
-        elif args.agent == 'ShortestProcessingTime':
-            agent = ShortestProcessingTimeAgent()
-        elif args.agent == 'UniformRandom':
-            agent = UniformRandomAgent()
-        elif args.agent == 'RoundRobin':
-            agent = RoundRobinAgent()
-        elif args.agent == 'rl':
-            sess = tf.compat.v1.Session()
-            tf.compat.v1.set_random_seed(args.seed)
-            agent = ActorAgent(sess, args.num_workers, args.job_size_norm_factor)
+        for agent_name in args.agent:
+            if agent_name == 'LeastWork':
+                agent = LeastWorkAgent()
+            elif agent_name == 'ShortestProcessingTime':
+                agent = ShortestProcessingTimeAgent()
+            elif agent_name == 'UniformRandom':
+                agent = UniformRandomAgent()
+            elif agent_name == 'RoundRobin':
+                agent = RoundRobinAgent()
+            elif agent_name == 'rl':
+                sess = tf.compat.v1.Session()
+                tf.compat.v1.set_random_seed(args.seed)
+                agent = ActorAgent(sess, args.num_workers, args.job_size_norm_factor)
 
-            # initialize parameters
-            sess.run(tf.global_variables_initializer())
-            saver = tf.compat.v1.train.Saver()
+                # initialize parameters
+                sess.run(tf.global_variables_initializer())
+                saver = tf.compat.v1.train.Saver()
 
-            # load trained model
-            if args.pretrained_model is not None:
-                saver.restore(sess, args.pretrained_model)
-        else:
-            raise ValueError('Unsupported agent {}'.format(args.agent))
-        total_reward, avg_jct = test_unseen(agent, args)
-        print('total_reward = ', np.mean(total_reward), compute_std_of_mean(total_reward))
-        print('avg_jct = ', np.mean(avg_jct), compute_std_of_mean(avg_jct))
+                # load trained model
+                if args.pretrained_model is not None:
+                    saver.restore(sess, args.pretrained_model)
+            else:
+                raise ValueError('Unsupported agent {}'.format(agent_name))
+            total_reward, avg_jct = test_unseen(agent, args)
+            print(agent_name)
+            print('total_reward = ', np.mean(total_reward), compute_std_of_mean(total_reward))
+            print('avg_jct = ', np.mean(avg_jct), compute_std_of_mean(avg_jct))
     else:
         raise ValueError('Unsupported command {}'.format(args.command))
 
