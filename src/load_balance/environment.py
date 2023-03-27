@@ -148,7 +148,7 @@ class Environment(object):
 
     def change_action_availability(self):
         # TODO: hard coded action change prob.
-        prob = 0.8
+        prob = 0.9
         self.worker_avail = np.array(np.random.rand(self.num_workers) <= prob, dtype=int)
         # Make sure that there is at least one available action always.
         while not self.worker_avail.any():

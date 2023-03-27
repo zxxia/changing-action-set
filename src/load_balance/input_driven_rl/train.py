@@ -103,8 +103,8 @@ def training_agent(agent_id, params_queue, reward_queue, adv_queue,
         env.reset()
 
         # TODO: is this correct?
-        if episode_count % action_avail_change_freq_episode == 0:
-            env.change_action_availability()
+        # if episode_count % action_avail_change_freq_episode == 0:
+        #     env.change_action_availability()
 
         # set up training storage
         batch_inputs, batch_masks, batch_act_vec, batch_values, \
@@ -152,6 +152,8 @@ def training_agent(agent_id, params_queue, reward_queue, adv_queue,
 
             # store reward
             batch_reward.append(reward)
+            # TODO: is this correct? change mask every step.
+            env.change_action_availability()
 
         # store final time
         batch_wall_time.append(env.wall_time.curr_time)
