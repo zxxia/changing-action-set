@@ -62,8 +62,7 @@ class ActorAgent(object):
 
         # actor loss due to advantge (negated)
         self.adv_loss = tf.reduce_sum(tf.multiply(
-            tf.math.log(self.selected_act_prob + \
-            self.eps), -self.adv))
+            tf.math.log(self.selected_act_prob + self.eps), -self.adv))
 
         # entropy loss (normalized)
         self.entropy_loss = tf.reduce_sum(tf.multiply(
@@ -78,8 +77,7 @@ class ActorAgent(object):
             tf.compat.v1.GraphKeys.TRAINABLE_VARIABLES, scope=self.scope)
 
         # operations for setting parameters
-        self.input_params, self.set_params_op = \
-            self.define_params_op()
+        self.input_params, self.set_params_op = self.define_params_op()
 
         # actor gradients
         self.act_gradients = tf.gradients(self.loss, self.params)
@@ -91,8 +89,8 @@ class ActorAgent(object):
         self.act_opt = self.optimizer(self.lr_rate).minimize(self.loss)
 
         # apply gradient directly to update parameters
-        self.apply_grads = self.optimizer(self.lr_rate).\
-            apply_gradients(zip(self.act_gradients, self.params))
+        self.apply_grads = self.optimizer(self.lr_rate).apply_gradients(
+            zip(self.act_gradients, self.params))
 
     def nn_init(self, input_dim, hid_dims, output_dim):
         weights = []
