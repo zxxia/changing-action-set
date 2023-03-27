@@ -70,7 +70,7 @@ def visualize_queue_occupancy(load, workers, finished_jobs, result_folder,
         job_completion_time.append(duration)
         worker_job_completion_time[job.worker.worker_id].append(duration)
 
-    fig = plt.figure()
+    fig = plt.figure(figsize=(20, 20))
 
     ax = plt.subplot(num_workers + 1, 1, 1)
     ax.step(overall_time, overall_jobs, 'blue', alpha=0.85, where='post')
@@ -79,7 +79,9 @@ def visualize_queue_occupancy(load, workers, finished_jobs, result_folder,
                  ' Average completon time: ' +
                  '%.2f' % np.mean(job_completion_time))
     ax.set_xlabel('Time')
-    ax.set_ylabel('Queue size')
+    ax.set_ylabel('Queue size (# of jobs)')
+    ax.set_xlim(0, )
+    ax.set_ylim(0, )
 
     for worker_id in range(num_workers):
         ax = plt.subplot(num_workers + 1, 1, worker_id + 2)
@@ -91,7 +93,9 @@ def visualize_queue_occupancy(load, workers, finished_jobs, result_folder,
                      ' Average completion time: ' +
                      '%.2f' % np.mean(worker_job_completion_time[worker_id]))
         ax.set_xlabel('Time')
-        ax.set_ylabel('Queue size')
+        ax.set_ylabel('Queue size (# of jobs)')
+        ax.set_xlim(0, )
+        ax.set_ylim(0, )
 
     plt.tight_layout()
 
