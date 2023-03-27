@@ -16,6 +16,7 @@ def test(agent, args, num_exp=100):
 
     all_total_reward = []
     all_avg_jct = []
+    all_percent_finished_jobs = []
 
     # run experiment
     for i in range(num_exp):
@@ -35,5 +36,7 @@ def test(agent, args, num_exp=100):
             total_reward += reward
         all_total_reward.append(total_reward / args.reward_scale)
         all_avg_jct.append(np.mean(env.get_job_completion_time()))
+        all_percent_finished_jobs.append(
+            len(env.finished_jobs) / job_generator.num_stream_jobs)
 
-    return all_total_reward, all_avg_jct
+    return all_total_reward, all_avg_jct, all_percent_finished_jobs

@@ -212,7 +212,8 @@ def train(args):
     f_val = open(os.path.join(args.model_folder, "validation.csv"), 'w', 1)
     val_writer = csv.writer(f_val, delimiter="\t", lineterminator="\n")
     val_writer.writerow(["episode", "mean_reward", "std_reward", "mean_jct",
-                         "std_jct"])
+                         "std_jct", "mean_percent_of_finished_jobs",
+                         "std_percent_of_finished_jobs"])
 
     # initialize communication queues
     params_queues = [mp.Queue(1) for _ in range(args.num_agents)]
@@ -410,7 +411,8 @@ def train(args):
         if ep % args.model_save_interval == 0:
             saver.save(sess, os.path.join(args.model_folder, "model_ep_{:05d}.ckpt".format(ep)))
             # perform testing
-            test_result, all_avg_jct = test(actor_agent, args)
+            test_result, all_avg_jct, all_percent_finished_jobs = test(
+                actor_agent, args)
             # plot testing
             all_iters.append(ep)
             test_mean = np.mean(test_result)
@@ -418,7 +420,9 @@ def train(args):
             val_writer.writerow(
                 [ep] + ["{:.3f}".format(val) for val in [
                     test_mean, test_std,
-                    np.mean(all_avg_jct), np.std(all_avg_jct)]])
+                    np.mean(all_avg_jct), np.std(all_avg_jct),
+                    np.mean(all_percent_finished_jobs),
+                    np.std(all_percent_finished_jobs)]])
             all_perf[0].append(test_mean - test_std)
             all_perf[1].append(test_mean)
             all_perf[2].append(test_mean + test_std)
