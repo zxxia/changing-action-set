@@ -83,6 +83,7 @@ def visualize_queue_occupancy(load, workers, finished_jobs, result_folder,
     ax.set_xlim(0, )
     ax.set_ylim(0, )
 
+    ymax = max([max(jobs) for jobs in worker_jobs])
     for worker_id in range(num_workers):
         ax = plt.subplot(num_workers + 1, 1, worker_id + 2)
         ax.step(worker_time[worker_id], worker_jobs[worker_id],
@@ -95,7 +96,7 @@ def visualize_queue_occupancy(load, workers, finished_jobs, result_folder,
         ax.set_xlabel('Time')
         ax.set_ylabel('Queue size (# of jobs)')
         ax.set_xlim(0, )
-        ax.set_ylim(0, )
+        ax.set_ylim(0, ymax * 1.05)
 
     plt.tight_layout()
 
