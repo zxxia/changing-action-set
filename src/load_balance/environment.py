@@ -1,5 +1,5 @@
 import numpy as np
-from typing import List
+from typing import List, Optional
 
 from load_balance.utils import generate_coin_flips
 from load_balance.worker import Worker
@@ -12,7 +12,8 @@ class Environment(object):
     def __init__(self, job_generator: JobGenerator, num_workers: int = 3,
                  service_rates: List[float] = [0.5, 1.0, 2.0],
                  service_rate_min: float = 1.0, service_rate_max: float = 10.0,
-                 queue_shuffle_prob: float = 0.5):
+                 queue_shuffle_prob: float = 0.5,
+                 action_mask: Optional[List[int]] = None):
         # global timer
         self.wall_time = WallTime()
         # uses priority queue
@@ -36,6 +37,9 @@ class Environment(object):
         self.finished_jobs = []
 
         self.worker_avail = np.ones(self.num_workers)
+        if action_mask is not None:
+            assert len(action_mask) == self.num_workers
+            self.worker_avail = np.array(action_mask)
 
     def generate_jobs(self):
         all_t, all_size = self.job_generator.generate_jobs()

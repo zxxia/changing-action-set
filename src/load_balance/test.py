@@ -12,7 +12,7 @@ def test(agent, args, num_exp=100):
 
     env = Environment(job_generator, args.num_workers, args.service_rates,
                       args.service_rate_min, args.service_rate_max,
-                      args.queue_shuffle_prob)
+                      args.queue_shuffle_prob, args.action_mask)
 
     all_total_reward = []
     all_avg_jct = []

@@ -50,7 +50,8 @@ def parse_args():
     # testing
     test = subparsers.add_parser('test', help='test a load balance agent.')
     test.add_argument('--agent', type=str, default=['rl'], nargs='+',
-                        choices=('rl', 'LeastWork', 'ShortestProcessingTime', 'UniformRandom', 'RoundRobin'),
+                        choices=('rl', 'LeastWork', 'ShortestProcessingTime',
+                                 'UniformRandom', 'RoundRobin'),
                         help='agent type')
 
     # load balance environment configurations
@@ -84,4 +85,6 @@ def parse_args():
                         help='queue shuffle prob')
     parser.add_argument('--reward-scale', type=float, default=1e4,
                        help='reward scale in training')
+    parser.add_argument('--action-mask', type=int, default=None, nargs='+',
+                        choices=(0, 1), help='action availability mask.')
     return parser.parse_args()
