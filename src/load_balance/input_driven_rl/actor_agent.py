@@ -22,7 +22,7 @@ class ActorAgent(object):
         self.num_workers = num_workers
         self.hid_dims = hid_dims
         self.job_size_norm_factor = job_size_norm_factor
-        self.input_dim = self.num_workers + 1  # (queue size, job_size)
+        self.input_dim = 2 * self.num_workers + 1  # (queue sizes, service_rates, job_size)
         self.output_dim = self.num_workers  # priority (to softmax over)
 
         # input dimension: [batch_size, num_workers + 1]
@@ -205,7 +205,9 @@ class ActorAgent(object):
                 min(sum(j.size for j in worker.queue) / \
                 self.job_size_norm_factor / 5.0,  # normalization
                 20.0)
+            inputs[0, worker.worker_id + self.num_workers] = worker.service_rate
         inputs[0, -1] = min(job.size / self.job_size_norm_factor, 10.0)  # normalization
+        print(inputs.shape)
 
         action = self.predict(inputs, mask)
 
