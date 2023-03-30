@@ -207,7 +207,6 @@ class ActorAgent(object):
                 20.0)
             inputs[0, worker.worker_id + self.num_workers] = worker.service_rate
         inputs[0, -1] = min(job.size / self.job_size_norm_factor, 10.0)  # normalization
-        print(inputs.shape)
 
         action = self.predict(inputs, mask)
 
