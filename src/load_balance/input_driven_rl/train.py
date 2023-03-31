@@ -74,7 +74,7 @@ def training_agent(agent_id, params_queue, reward_queue, adv_queue,
     actor_agent = ActorAgent(sess, num_workers=args.num_workers,
                              job_size_norm_factor=args.job_size_norm_factor,
                              eps=args.eps, hid_dims=args.hid_dims)
-    critic_agent = CriticAgent(sess, input_dim=args.num_workers + 2,
+    critic_agent = CriticAgent(sess, input_dim=2*args.num_workers + 2,
                                hid_dims=args.hid_dims)
 
     # set up envrionemnt
@@ -119,7 +119,8 @@ def training_agent(agent_id, params_queue, reward_queue, adv_queue,
             # decompose state (for storing infomation)
             workers, job, curr_time, mask = state
 
-            inputs = np.zeros([1, args.num_workers + 1])
+            inputs = np.zeros([1, 2*args.num_workers + 1])
+            inputs[0, args.num_workers: args.num_workers * 2] = mask
             for worker in workers:
                 inputs[0, worker.worker_id] = \
                     min(sum(j.size for j in worker.queue) / \
@@ -159,7 +160,7 @@ def training_agent(agent_id, params_queue, reward_queue, adv_queue,
         batch_wall_time.append(env.wall_time.curr_time)
 
         # compute all values
-        value_inputs = np.zeros([len(batch_inputs), args.num_workers + 2])
+        value_inputs = np.zeros([len(batch_inputs), 2*args.num_workers + 2])
         for i in range(len(batch_inputs)):
             value_inputs[i, :-1] = batch_inputs[i]
             value_inputs[i, -1] = batch_wall_time[i] / float(batch_wall_time[-1])
@@ -239,7 +240,7 @@ def train(args):
     actor_agent = ActorAgent(sess, args.num_workers, args.job_size_norm_factor)
 
     # set up critic agent in master thread
-    critic_agent = CriticAgent(sess, input_dim=args.num_workers + 2)
+    critic_agent = CriticAgent(sess, input_dim=2*args.num_workers + 2)
 
     # initialize model parameters
     sess.run(tf.compat.v1.global_variables_initializer())

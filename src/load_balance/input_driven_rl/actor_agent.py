@@ -22,7 +22,7 @@ class ActorAgent(object):
         self.num_workers = num_workers
         self.hid_dims = hid_dims
         self.job_size_norm_factor = job_size_norm_factor
-        self.input_dim = self.num_workers + 1  # (queue size, job_size)
+        self.input_dim = 2*self.num_workers + 1  # (queue size, job_size)
         self.output_dim = self.num_workers  # priority (to softmax over)
 
         # input dimension: [batch_size, num_workers + 1]
@@ -159,9 +159,10 @@ class ActorAgent(object):
         })
 
     def predict(self, inputs, mask: Optional[np.ndarray] = None):
-        mask = mask.reshape(1, -1).astype(np.bool)
         if mask is None:
             mask = np.ones(self.output_dim)
+        assert mask is not None
+        mask = mask.reshape(1, -1).astype(np.bool)
         assert not np.all(mask == 0), "action mask must allow at least one action."
         return self.sess.run(self.act, feed_dict={
             self.inputs: inputs, self.mask: mask
@@ -196,10 +197,11 @@ class ActorAgent(object):
                    mask: Optional[np.ndarray] = None):
         if mask is None:
             mask = np.ones(self.output_dim)
-        assert not np.all(mask == 0), "action mask must allow at least one action."
+        assert mask is not None and not np.all(mask == 0), "action mask must allow at least one action."
 
         inputs = np.zeros([1, self.input_dim])
 
+        inputs[0, self.num_workers: self.num_workers * 2] = mask
         for worker in workers:
             inputs[0, worker.worker_id] = \
                 min(sum(j.size for j in worker.queue) / \
