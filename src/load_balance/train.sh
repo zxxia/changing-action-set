@@ -16,7 +16,7 @@ git_summary () {
     git diff HEAD > $patch
 }
 
-exp_name=regular_value_network_masked
+exp_name=expand_input
 mkdir -p ./results/parameters/${exp_name}
 git_summary ./results/parameters/${exp_name}/
 python3 src/load_balance/run.py --num-workers 10 \
